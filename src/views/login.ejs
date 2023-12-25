@@ -1,0 +1,136 @@
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login SSO</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.11.2/font/bootstrap-icons.min.css" integrity="sha512-D1liES3uvDpPrgk7vXR/hR/sukGn7EtDWEyvpdLsyalQYq6v6YUsTUJmku7B4rcuQ21rf0UTksw2i/2Pdjbd3g==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+</head>
+
+<style>
+    .login-container {
+        margin-top: 80px;
+    }
+
+    .social-wrapper {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .social-wrapper h4 {
+        text-transform: capitalize;
+        text-decoration: underline;
+        font-size: 20px;
+        font-weight: 600;
+        margin-bottom: 10px;
+    }
+
+    .social-wrapper  .socials i{
+        font-size: 30px;
+        padding: 0px 8px;
+        cursor: pointer;
+    }
+
+    .social-wrapper  .socials i.bi-google {
+        color: green;    
+    }
+
+    .social-wrapper  .socials i.bi-facebook {
+        color: blue;    
+    }
+</style>
+
+<body>
+    <div class="container login-container">
+        <div class="row">
+            <!-- <form action="/login" method="POST"> -->
+            <div class="login-wrapper col-6 mx-auto my-auto">
+                <fieldset class="border rounded-3 p-3">
+                    <legend class="float-none w-auto px-3">Login Form</legend>
+                    
+                    <input type="hidden" id="redirectUrl" name="redirectUrl" value="<%= redirectUrl %>" />
+
+                    <div class="mb-3 col-12">
+                        <label for="username" class="form-label">Username</label>
+                        <!-- Sử dụng valid, invalid có sẵn của bootstrap 5 -->
+                        <div class="input-group has-validation">
+                            <input type="email" class="form-control" id="username" name="username" />
+                            <div class="invalid-feedback error-username"></div>
+                        </div>
+                    </div>
+
+                    <div class="mb-3 col-12">
+                        <label for="password" class="form-label">Password</label>
+                        <!-- Sử dụng valid, invalid có sẵn của bootstrap 5 -->
+                        <div class="input-group has-validation">
+                            <input type="password" class="form-control" id="password" name="password" />
+                            <div class="invalid-feedback error-password"></div>
+                        </div>
+                    </div>
+
+                    <button type="button" id="btnLogin" class="btn btn-primary">Login</button>
+                    
+                    <hr>
+
+                    <div class="social-wrapper">
+                        <h4>or login with:</h4>
+                        <div class="socials">
+                            <i class="bi bi-google" title="Login with Google"></i>
+                            <i class="bi bi-facebook" title="Login with Facebook"></i>
+                        </div>
+                    </div>
+
+
+                </fieldset>
+            </div>
+            <!-- </form> -->
+        </div>
+    </div>
+</body>
+
+<script>
+    $(document).ready(function(){
+        $("#btnLogin").click(function(){
+            const username = $("#username").val().trim();
+            const password = $("#password").val().trim();
+            const redirectUrl = $("#redirectUrl").val().trim();
+           $.ajax({
+            type: "POST",
+            url: `${window.location.origin}/login`,
+            data: { username, password, redirectUrl },
+            withCredentials: true, // Với withCredentials: true trình duyệt của chúng ta mới có thể set được cookie, session mà chúng ta lưu xuống
+            //  Bao gồm thông tin xác thực (credentials) khi gửi gồm các cookie, giấy chứng nhận SSL, và/hoặc thông tin xác thực HTTP.
+            success: function(data){  
+                $('#username').removeClass('is-invalid');
+                $('#password').removeClass('is-invalid');
+                window.location.href = `${data.redirectUrl}/code?ssoToken=${data.code}`;
+            },
+            error: function(XMLHttpRequest, textStatus, errorThrown) { 
+                const errorJson = XMLHttpRequest.responseJSON;
+                const errorCode = errorJson.code ?? null;
+                const errorMsg = errorJson.message ?? null;
+                if(errorCode === 1) {
+                    $('#username').addClass('is-invalid');
+                    $('.error-username').text(errorMsg);
+                    $('#password').removeClass('is-invalid');
+                    $('.error-password').text('');
+                }
+                if(errorCode === 2) {
+                    $('#username').removeClass('is-invalid');
+                    $('.error-username').text('');
+                    $('#password').addClass('is-invalid');
+                    $('.error-password').text(errorMsg);
+                }
+                $('#password').val('');
+            }   
+           }) 
+        });
+    })
+</script>
+
+</html>
