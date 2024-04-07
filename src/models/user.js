@@ -1,7 +1,5 @@
 'use strict';
-const {
-  Model
-} = require('sequelize');
+const { Model } = require('sequelize');
 module.exports = (sequelize, DataTypes) => {
   class User extends Model {
     /**
@@ -15,6 +13,7 @@ module.exports = (sequelize, DataTypes) => {
       User.belongsToMany(models.Project, { through: 'Project_User' });
     }
   };
+
   //object relational mapping
   User.init({
     email: DataTypes.STRING,
@@ -25,6 +24,10 @@ module.exports = (sequelize, DataTypes) => {
     phone: DataTypes.STRING,
     groupId: DataTypes.INTEGER,
     refreshToken: DataTypes.STRING,
+    typeLogin: {
+      type: DataTypes.ENUM('LOCAL', 'GOOGLE', 'FACEBOOK'),
+      defaultValue: 'LOCAL',
+    }
   }, {
     sequelize,
     modelName: 'User',

@@ -7,6 +7,8 @@ import configCors from "./config/cors";
 import bodyParser from 'body-parser';
 import cookieParser from 'cookie-parser';
 import { configPassport } from './controller/passportController';
+import { configPassportGoogle } from './controller/googleController';
+import { configPassportFacebook } from './controller/facebookController';
 import connectDB from './config/connectDB';
 import configSession from './config/session';
 // Hiển thị lỗi bên server với Flash Message
@@ -48,6 +50,8 @@ app.use((req, res) => {
 })
 
 configPassport();
+configPassportGoogle();
+configPassportFacebook();
 
 app.listen(PORT, () => {
     console.log(">>> JWT Backend is running on the port = " + PORT);

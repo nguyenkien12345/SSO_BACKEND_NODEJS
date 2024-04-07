@@ -132,11 +132,44 @@ const updateUserRefreshToken = async (email, refreshToken) => {
     }
 }
 
+// upsert: Có nghĩa là update và insert
+const upsertAccountSocialMedia = async (typeLogin, data) => {
+    try {
+        let user = null;
+        user = await db.User.findOne({
+            where: {
+                email: data.email,
+                typeLogin: typeLogin
+            },
+            // Thay vì trả ra kiểu dữ liệu là sequelize (Có nhiều field không cần thiết) thì ta sẽ trả ra dữ liệu thuần kiểu object
+            raw: true
+        })
+        if(!user) {
+            user = await db.User.create({
+                email: data.email,
+                username: data.username,
+                typeLogin: typeLogin
+            });
+            // .get({plain:true}) Thay vì trả ra kiểu dữ liệu là sequelize (Có nhiều field không cần thiết) thì ta sẽ trả ra dữ liệu thuần kiểu object
+            user = user.get({plain:true});
+        }
+
+        return user;
+    }
+    catch (error) { 
+        return { 
+            EM: 'Something wrongs in service...', 
+            EC: -2 
+        }
+    }
+}
+
 module.exports = {
     registerNewUser, 
     handleUserLogin, 
     hashUserPassword, 
     checkEmailExist, 
     checkPhoneExist,
-    updateUserRefreshToken
+    updateUserRefreshToken,
+    upsertAccountSocialMedia
 }

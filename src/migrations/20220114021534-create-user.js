@@ -32,6 +32,9 @@ module.exports = {
       refreshToken: {
         type: Sequelize.STRING
       },
+      typeLogin: {
+        type: Sequelize.ENUM('LOCAL', 'GOOGLE', 'FACEBOOK')
+      },
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE

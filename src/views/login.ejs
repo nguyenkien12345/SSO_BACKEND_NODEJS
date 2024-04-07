@@ -80,8 +80,8 @@
                     <div class="social-wrapper">
                         <h4>or login with:</h4>
                         <div class="socials">
-                            <i class="bi bi-google" title="Login with Google"></i>
-                            <i class="bi bi-facebook" title="Login with Facebook"></i>
+                            <i id="iconGoogle"   class="bi bi-google" title="Login with Google"></i>
+                            <i id="iconFacebook" class="bi bi-facebook" title="Login with Facebook"></i>
                         </div>
                     </div>
 
@@ -104,7 +104,7 @@
             url: `${window.location.origin}/login`,
             data: { username, password, redirectUrl },
             withCredentials: true, // Với withCredentials: true trình duyệt của chúng ta mới có thể set được cookie, session mà chúng ta lưu xuống
-            //  Bao gồm thông tin xác thực (credentials) khi gửi gồm các cookie, giấy chứng nhận SSL, và/hoặc thông tin xác thực HTTP.
+            //  Bao gồm thông tin xác thực (credentials) khi gửi gồm các cookie, giấy chứng nhận SSL, và/hoặc thông tin xác thực HTTP
             success: function(data){  
                 $('#username').removeClass('is-invalid');
                 $('#password').removeClass('is-invalid');
@@ -129,6 +129,18 @@
                 $('#password').val('');
             }   
            }) 
+        });
+
+        $('#iconGoogle').on('click', function(){
+            localStorage.removeItem("clientURL");
+            localStorage.setItem("clientURL", $('#redirectUrl').val());
+            window.location.href= '/auth/google';
+        });
+
+        $('#iconFacebook').on('click', function(){
+            localStorage.removeItem("clientURL");
+            localStorage.setItem("clientURL", $('#redirectUrl').val());
+            window.location.href= '/auth/facebook';
         });
     })
 </script>
